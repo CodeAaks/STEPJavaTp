@@ -1,0 +1,50 @@
+import java.util.*;
+ 
+abstract class Customer {
+    final double amount;
+    Customer(double amount) { this.amount = amount; }
+    abstract double finalAmount();
+    String label() { return getClass().getSimpleName().toUpperCase(); }
+}
+ 
+class Student extends Customer {
+    Student(double amount) { super(amount); }
+    double finalAmount() { return amount * 0.90; }
+}
+ 
+class Staff extends Customer {
+    Staff(double amount) { super(amount); }
+    double finalAmount() { return amount * 0.95; }
+}
+ 
+class Guest extends Customer {
+    Guest(double amount) { super(amount); }
+    double finalAmount() { return amount + 10; }
+}
+ 
+public class Main {
+    static Customer of(String type, double amount) {
+        return switch (type) {
+            case "STUDENT" -> new Student(amount);
+            case "STAFF" -> new Staff(amount);
+            default -> new Guest(amount);
+        };
+    }
+ 
+    public static void main(String[] args) {
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        List<Customer> bills = new ArrayList<>();
+        while (n-- > 0) {
+            bills.add(of(sc.next(), sc.nextDouble()));
+        }
+        double total = 0;
+        for (Customer c : bills) {
+            total += c.finalAmount();
+            System.out.printf("%s: %.2f%n", c.label(), c.finalAmount());
+        }
+        System.out.printf("Total: %.2f%n", total);
+    }
+}
+ 

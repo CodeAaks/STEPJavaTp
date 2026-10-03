@@ -1,0 +1,53 @@
+import java.util.*;
+
+interface BusUser {
+    double TRANSPORT_FEE = 12000;
+}
+
+abstract class Student {
+    static final double TUITION = 40000;
+    final String name;
+    Student(String name) { this.name = name; }
+    abstract double tuition();
+    double fee() {
+        return tuition() + (this instanceof BusUser ? BusUser.TRANSPORT_FEE : 0);
+    }
+}
+
+class DayScholar extends Student implements BusUser {
+    DayScholar(String name) { super(name); }
+    double tuition() { return TUITION; }
+}
+
+class Hosteller extends Student {
+    Hosteller(String name) { super(name); }
+    double tuition() { return TUITION + 60000; }
+}
+
+class Scholar extends Student implements BusUser {
+    Scholar(String name) { super(name); }
+    double tuition() { return TUITION / 2; }
+}
+
+public class Main {
+    static Student of(String type, String name) {
+        return switch (type) {
+            case "DAY_SCHOLAR" -> new DayScholar(name);
+            case "HOSTELLER" -> new Hosteller(name);
+            default -> new Scholar(name);
+        };
+    }
+
+    public static void main(String[] args) {
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        double total = 0;
+        while (n-- > 0) {
+            Student s = of(sc.next(), sc.next());
+            total += s.fee();
+            System.out.printf("%s: %.2f%n", s.name, s.fee());
+        }
+        System.out.printf("Total Collected: %.2f%n", total);
+    }
+}

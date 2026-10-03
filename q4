@@ -1,0 +1,62 @@
+import java.util.*;
+
+interface NightService {
+    default double withNight(double fare) {
+        return fare * 1.2;
+    }
+}
+
+abstract class Cab {
+    static final double MIN_FARE = 100;
+    abstract double rate();
+    double fare(double km) {
+        return Math.max(MIN_FARE, km * rate());
+    }
+}
+
+class Mini extends Cab {
+    double rate() { return 10; }
+}
+
+class Sedan extends Cab implements NightService {
+    double rate() { return 14; }
+}
+
+class Suv extends Cab implements NightService {
+    double rate() { return 18; }
+}
+
+public class Main {
+    static Cab of(String type) {
+        return switch (type) {
+            case "MINI" -> new Mini();
+            case "SEDAN" -> new Sedan();
+            default -> new Suv();
+        };
+    }
+
+    public static void main(String[] args) {
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        double total = 0;
+        while (n-- > 0) {
+            String type = sc.next();
+            double km = sc.nextDouble();
+            boolean night = sc.next().equals("NIGHT");
+            Cab cab = of(type);
+            double fare = cab.fare(km);
+            if (night) {
+                if (cab instanceof NightService ns) {
+                    fare = ns.withNight(fare);
+                } else {
+                    System.out.println(type + ": night service not available");
+                    continue;
+                }
+            }
+            total += fare;
+            System.out.printf("%s: %.2f%n", type, fare);
+        }
+        System.out.printf("Total: %.2f%n", total);
+    }
+}

@@ -1,0 +1,49 @@
+import java.util.*;
+
+abstract class Vehicle {
+    final int hours;
+    Vehicle(int hours) { this.hours = hours; }
+    abstract double charge();
+    String label() { return getClass().getSimpleName().toUpperCase(); }
+}
+
+class Bike extends Vehicle {
+    Bike(int hours) { super(hours); }
+    double charge() { return 10.0 * hours; }
+}
+
+class Car extends Vehicle {
+    Car(int hours) { super(hours); }
+    double charge() { return 30.0 + 20.0 * (hours - 1); }
+}
+
+class Truck extends Vehicle {
+    Truck(int hours) { super(hours); }
+    double charge() { return Math.max(100.0, 50.0 * hours); }
+}
+
+public class Main {
+    static Vehicle of(String type, int hours) {
+        return switch (type) {
+            case "BIKE" -> new Bike(hours);
+            case "CAR" -> new Car(hours);
+            default -> new Truck(hours);
+        };
+    }
+
+    public static void main(String[] args) {
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        List<Vehicle> vehicles = new ArrayList<>();
+        while (n-- > 0) {
+            vehicles.add(of(sc.next(), sc.nextInt()));
+        }
+        double total = 0;
+        for (Vehicle v : vehicles) {
+            total += v.charge();
+            System.out.printf("%s: %.2f%n", v.label(), v.charge());
+        }
+        System.out.printf("Total: %.2f%n", total);
+    }
+}

@@ -1,0 +1,51 @@
+import java.util.*;
+
+abstract class Room {
+    final int units;
+    Room(int units) { this.units = units; }
+    abstract double bill();
+    String label() { return getClass().getSimpleName().toUpperCase(); }
+}
+
+class Single extends Room {
+    Single(int units) { super(units); }
+    double bill() { return 8.0 * units; }
+}
+
+class Shared extends Room {
+    final int occupants;
+    Shared(int units, int occupants) {
+        super(units);
+        this.occupants = occupants;
+    }
+    double bill() { return 6.0 * units / occupants; }
+}
+
+class Ac extends Room {
+    Ac(int units) { super(units); }
+    double bill() { return 10.0 * units + 200; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        List<Room> rooms = new ArrayList<>();
+        while (n-- > 0) {
+            String type = sc.next();
+            int units = sc.nextInt();
+            rooms.add(switch (type) {
+                case "SINGLE" -> new Single(units);
+                case "SHARED" -> new Shared(units, sc.nextInt());
+                default -> new Ac(units);
+            });
+        }
+        double total = 0;
+        for (Room r : rooms) {
+            total += r.bill();
+            System.out.printf("%s: %.2f%n", r.label(), r.bill());
+        }
+        System.out.printf("Total: %.2f%n", total);
+    }
+}

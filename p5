@@ -1,0 +1,50 @@
+import java.time.LocalDate;
+import java.util.*;
+
+abstract class Plan {
+    final String name;
+    final LocalDate start;
+    Plan(String name, LocalDate start) {
+        this.name = name;
+        this.start = start;
+    }
+    abstract int validityDays();
+    LocalDate renewal() { return start.plusDays(validityDays()); }
+}
+
+class Basic extends Plan {
+    Basic(String name, LocalDate start) { super(name, start); }
+    int validityDays() { return 30; }
+}
+
+class Standard extends Plan {
+    Standard(String name, LocalDate start) { super(name, start); }
+    int validityDays() { return 90; }
+}
+
+class Premium extends Plan {
+    Premium(String name, LocalDate start) { super(name, start); }
+    int validityDays() { return 365; }
+}
+
+public class Main {
+    static Plan of(String type, String name, LocalDate start) {
+        return switch (type) {
+            case "BASIC" -> new Basic(name, start);
+            case "STANDARD" -> new Standard(name, start);
+            default -> new Premium(name, start);
+        };
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        List<Plan> plans = new ArrayList<>();
+        while (n-- > 0) {
+            plans.add(of(sc.next(), sc.next(), LocalDate.parse(sc.next())));
+        }
+        for (Plan p : plans) {
+            System.out.println(p.name + ": " + p.renewal());
+        }
+    }
+}

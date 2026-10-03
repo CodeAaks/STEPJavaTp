@@ -1,0 +1,52 @@
+import java.util.*;
+
+interface Insurable {
+    default double insurance(double declaredValue) {
+        return declaredValue * 0.02;
+    }
+}
+
+abstract class Parcel {
+    abstract double charge(double weight);
+}
+
+class Standard extends Parcel {
+    double charge(double weight) { return 40 + 10 * weight; }
+}
+
+class Express extends Parcel implements Insurable {
+    double charge(double weight) { return 80 + 15 * weight; }
+}
+
+class Fragile extends Standard implements Insurable {
+    double charge(double weight) { return super.charge(weight) + 50; }
+}
+
+public class Main {
+    static Parcel of(String type) {
+        return switch (type) {
+            case "STANDARD" -> new Standard();
+            case "EXPRESS" -> new Express();
+            default -> new Fragile();
+        };
+    }
+
+    public static void main(String[] args) {
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        double grand = 0;
+        while (n-- > 0) {
+            String type = sc.next();
+            double weight = sc.nextDouble();
+            double value = sc.nextDouble();
+            Parcel p = of(type);
+            double charge = p.charge(weight);
+            double insurance = p instanceof Insurable i ? i.insurance(value) : 0;
+            double total = charge + insurance;
+            grand += total;
+            System.out.printf("%s: Charge=%.2f Insurance=%.2f Total=%.2f%n", type, charge, insurance, total);
+        }
+        System.out.printf("Grand Total: %.2f%n", grand);
+    }
+}
